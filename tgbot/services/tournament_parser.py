@@ -1,6 +1,5 @@
 import aiohttp
 from bs4 import BeautifulSoup
-import asyncio
 from aiocsv import AsyncWriter
 import aiofiles
 import os
@@ -41,6 +40,3 @@ async def tournament_statistics():
         writer = AsyncWriter(file)
         await writer.writerow(header)
         await writer.writerows(data)
-
-# if __name__ == '__main__':
-#     asyncio.run(tournament_statistics())
