@@ -19,7 +19,6 @@ async def admin_start(message: Message):
         message.bot,
         user_id=message.from_id
     )
-    print(await message.bot.get_my_commands())
 
 
 def register_command_start_admin(dp: Dispatcher):

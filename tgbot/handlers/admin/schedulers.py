@@ -1,6 +1,6 @@
 from aiogram import Dispatcher
 from aiogram.types import Message, CallbackQuery
-from aiogram.dispatcher.filters.builtin import Command, CommandStart
+from aiogram.dispatcher.filters.builtin import Command
 from aiogram.dispatcher import FSMContext
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -10,7 +10,7 @@ from aiogram_calendar_rus import simple_cal_callback, SimpleCalendar
 from tgbot.keyboards.inline_tasks import choice_types, days_week, tasks, \
     choice_types_tasks, input_data_tasks, choice_day, types_callback, days_callback
 from tgbot.misc.states import Tasks
-from tgbot.services.schedulers import add_jobs_in_scheduler, modify_jobs_in_scheduler
+from tgbot.services.scheduler.event_scheduler import add_jobs_in_scheduler, modify_jobs_in_scheduler
 
 
 async def task_scheduler(message: Message):

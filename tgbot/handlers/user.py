@@ -6,15 +6,14 @@ from aiogram.dispatcher.filters import CommandStart
 
 from tgbot.keyboards.inline_team import team
 from tgbot.services.set_commands import set_default_commands
+# from tgbot.services.db.querys import show_ttable
 
 
 async def user_start(message: Message):
-    print(message)
     await message.bot.send_message(
         chat_id=message.from_id,
         text=f'Приветствую, {message.from_user.first_name}\n'
              f'в футбольном клубе Империал !')
-    print(await message.bot.get_my_commands())
     await set_default_commands(
         message.bot,
         user_id=message.from_id)
@@ -46,7 +45,7 @@ async def user_teams(callback: CallbackQuery):
     )
 
 
-async def statistic_list(message: Message):
+async def statistic_list(message: Message, session):
     await message.bot.send_message(
         chat_id=message.from_id,
         text='Стастика команды в турнирной таблице отправляется в приватный чат!'
@@ -62,5 +61,5 @@ def register_user(dp: Dispatcher):
     dp.register_message_handler(about, Command('about'))
     dp.register_message_handler(rules, Command('rules'))
     dp.register_message_handler(team_list, Command('team'))
-    dp.register_callback_query_handler(statistic_list, Command('statistic'))
+    dp.register_message_handler(statistic_list, Command('statistic'))
     dp.register_callback_query_handler(user_teams_cancel, text='cancel')

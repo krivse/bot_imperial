@@ -17,7 +17,6 @@ async def add_jobs_in_scheduler(data, scheduler):
 
 async def modify_jobs_in_scheduler(data, scheduler):
     """Изменение события в scheduler."""
-    dp = Dispatcher.get_current()
     job_id = data.get('job_id')
     start_date = data.get('start_date')
     end_date = data.get('end_date')
@@ -40,7 +39,7 @@ async def voting_scheduler(data: dict):
     title = data['title']
     await dp.bot.send_poll(
         chat_id=-1001826545007,
-        question='dfs',
+        question=title,
         options=['Буду', 'Не смогу'],
         is_anonymous=False,
         disable_notification=True)
