@@ -13,3 +13,4 @@ python-dotenv==0.21.1
 pytz==2022.7.1
 redis==4.4.2
 SQLAlchemy==2.0.3
+aioEasyPillow==0.0.3

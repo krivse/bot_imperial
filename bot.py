@@ -16,8 +16,8 @@ from tgbot.middlewares.environment import EnvironmentMiddleware
 from tgbot.middlewares.database import DatabaseMiddleware
 from tgbot.services.db.config import create_session_pool
 from tgbot.services.scheduler.config import setup_scheduler
-from tgbot.services.parsing_record.tournament import tournament_scheduler
-from tgbot.services.parsing_record.team_table import team_scheduler
+from tgbot.services.scheduler.tournament import tournament_scheduler
+from tgbot.services.scheduler.team import team_scheduler
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def register_all_handlers(dp):
 
 def plan_jobs(scheduler, session):
     tournament_scheduler(scheduler, session)
-    team_scheduler(scheduler, session)
+    # team_scheduler(scheduler, session)
 
 
 async def main():
