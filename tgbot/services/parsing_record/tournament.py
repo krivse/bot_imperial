@@ -1,17 +1,10 @@
 import aiohttp
 from bs4 import BeautifulSoup
 
-from sqlalchemy import insert, select, delete, func
+from sqlalchemy import insert, select, func, delete
 
 from tgbot.services.db.models import TournamentTable
-
-def tournament_scheduler(scheduler: object, instance_sess):
-    """Создание задачи для турнирной таблицы."""
-    setattr(tournament_statistics, 'session', instance_sess)
-    scheduler.add_job(
-        tournament_statistics,
-        # trigger='cron', day_of_week='wed', hour='12'
-    )
+from tgbot.services.pillow.tournament_img import show_table_tournament
 
 
 async def tournament_statistics():
@@ -45,7 +38,6 @@ async def tournament_statistics():
                 difference, result, url_team
             ])
             await connect.close()
-        print(data)
 
     async_session = getattr(tournament_statistics, 'session')
     session = async_session()
@@ -54,11 +46,13 @@ async def tournament_statistics():
         select(func.count(TournamentTable.id)).select_from(TournamentTable))).all()[0][0]
     if result_ < 1:
         await record_to_database(data, session)
+        await show_table_tournament(data)
     else:
         statement = delete(TournamentTable)
         await session.execute(statement)
         await session.commit()
         await record_to_database(data, session)
+        await show_table_tournament(data)
 
 
 async def record_to_database(data, session):

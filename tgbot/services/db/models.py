@@ -25,7 +25,7 @@ class Team(Base):
     __tablename__ = 'team'
 
     id = Column(Integer, primary_key=True)
-    gamer = Column(String, default=None, nullable=True)
+    player = Column(String, default=None, nullable=True)
     role = Column(String, default=None, nullable=True)
     games = Column(Integer, default=None, nullable=True)
     goals = Column(Integer, default=None, nullable=True)
@@ -37,5 +37,9 @@ class Team(Base):
     redcards = Column(Integer, default=None, nullable=True)
     vrt = Column(Integer, default=None, nullable=True)
     prg = Column(Integer, default=None, nullable=True)
-    url_photo = Column(String, default=None, nullable=True)
+    current_club = Column(String, default=None, nullable=True)
+    previous_clubs = Column(String, default=None, nullable=True)
+    birthday = Column(String, default=None, nullable=True)
+    age = Column(Integer, default=None, nullable=True)
+    avatar = Column(String, default=None, nullable=True)
     up_date = Column(TIMESTAMP(timezone=True), server_onupdate=func.now(), server_default=func.now())

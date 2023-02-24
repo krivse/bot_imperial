@@ -1,18 +1,14 @@
+import pathlib
+
 import aiohttp
 from bs4 import BeautifulSoup
+import asyncio
+import aiofiles
 
 from sqlalchemy import insert, select, delete, func
 
 from tgbot.services.db.models import Team
-
-
-def team_scheduler(scheduler: object, instance_sess):
-    """Создание задачи для таблицы команды."""
-    setattr(team_table, 'session', instance_sess)
-    scheduler.add_job(
-        team_table,
-        trigger='cron', day_of_week='wed', hour='12'
-    )
+from tgbot.services.pillow.team_img import show_table_player
 
 
 async def team_table():
@@ -27,11 +23,9 @@ async def team_table():
         soup = BeautifulSoup(await response.text(), 'lxml')
         data = []
         table = soup.find('tbody').find_all('tr')
-
         for position in table:
-            # number = position.find('td', class_="data-rank").text
-            gamer = position.find('td', class_='data-name has-photo').text
-            url_photo = position.find('td', class_='data-name has-photo').find('a').get('href')
+            player = position.find('td', class_='data-name has-photo').text
+            url_profile = position.find('td', class_='data-name has-photo').find('a').get('href')
             role = position.find('td', class_='data-position').text
             games = position.find('td', class_='data-appearances').text
             goals = position.find('td', class_='data-twofivefoureightfour').text
@@ -44,14 +38,37 @@ async def team_table():
             vrt = position.find('td', class_='data-sevenninethreethreefive').text
             prg = position.find('td', class_='data-sevenninethreethreefour').text
 
-            data.append([
-                gamer, role, games, goals,
-                penalty, assist, goalpen,
-                autogoals, yellowcards,
-                redcards, vrt, prg, url_photo
-            ])
-            await connect.close()
+            profile = await connect.get(url_profile)
+            sp = BeautifulSoup(await profile.text(), 'lxml')
+            profile_ = sp.find('div', class_='sp-list-wrapper').find_all('dd')
+            current_club = 'Империал' if profile_[-4].text in ['НАП', 'ЗАЩ', 'ПЗЩ', 'ВРТ'] else profile_[-4].text
+            previous_clubs = '-' if profile_[-3].text == 'Империал' else profile_[-3].text
+            birthday = profile_[-2].text
+            age = profile_[-1].text
+            photo = sp.find(
+                 'img',
+                class_='attachment-sportspress-fit-medium size-sportspress-fit-medium wp-post-image'
+            ).get('src')
+            profile_photo = await connect.get(photo)
+            first_name, last_name = player.split()[0], player.split()[1]
+            image = await aiofiles.open(
+                pathlib.Path.cwd()/'tgbot/services/pillow/media/player_card/avatar/'
+                f'{first_name}_{last_name }.jpg', mode='wb')
+            await image.write(await profile_photo.read())
+            await image.close()
 
+            data.append([
+                    player, role, games, goals,
+                    penalty, assist, goalpen,
+                    autogoals, yellowcards,
+                    redcards, vrt, prg,
+                    current_club, previous_clubs,
+                    birthday, age, image.name
+                ])
+            profile.close()
+            response.close()
+        await connect.close()
+    print(data)
     async_session = getattr(team_table, 'session')
     session = async_session()
 
@@ -59,11 +76,13 @@ async def team_table():
         select(func.count(Team.id)).select_from(Team))).all()[0][0]
     if result_ < 1:
         await record_to_database(data, session)
+        await show_table_player(data)
     else:
         statement = delete(Team)
         await session.execute(statement)
         await session.commit()
         await record_to_database(data, session)
+        await show_table_player(data)
 
 
 async def record_to_database(data, session):
@@ -71,7 +90,7 @@ async def record_to_database(data, session):
     for record in data:
         stmt = (
             insert(Team).values(
-                gamer=record[0],
+                player=record[0],
                 role=record[1],
                 games=int(record[2]),
                 goals=int(record[3]),
@@ -83,7 +102,11 @@ async def record_to_database(data, session):
                 redcards=int(record[9]),
                 vrt=int(record[10]),
                 prg=int(record[11]),
-                url_photo=record[12])
+                current_club=record[12],
+                previous_clubs=record[13],
+                birthday=record[14],
+                age=int(record[15])
+            )
         )
         await session.execute(stmt)
     await session.commit()

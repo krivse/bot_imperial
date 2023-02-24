@@ -1,12 +1,11 @@
 from aiogram import Dispatcher
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InputFile
 from aiogram.dispatcher.filters.builtin import Command
 from aiogram.dispatcher.filters import CommandStart
 
 
-from tgbot.keyboards.inline_team import team
+from tgbot.keyboards.inline_team import team_keyboard
 from tgbot.services.set_commands import set_default_commands
-# from tgbot.services.db.querys import show_ttable
 
 
 async def user_start(message: Message):
@@ -30,30 +29,36 @@ async def rules(message: Message):
     )
 
 
-async def team_list(message: Message):
+async def team_list(message: Message, session):
+    """Команда /team выводит кнопки для вывода информации об игроках."""
     await message.bot.send_message(
         chat_id=message.from_id,
-        text='Информация о члене команды отправляется в приватный чат!',
-        reply_markup=team
+        text='Показать информацию об игроке:',
+        reply_markup=await team_keyboard(session)
     )
 
 
-async def user_teams(callback: CallbackQuery):
-    await callback.bot.send_message(
+async def player_card(callback: CallbackQuery):
+    """Отправляется изображение с информацией об игроке."""
+    photo = InputFile(f'tgbot/services/pillow/media/player_card/{callback.data}.png')
+    await callback.bot.send_photo(
         chat_id=callback.from_user.id,
-        text=f'Информация об игроке: {callback.data}'
+        photo=photo
     )
 
 
-async def statistic_list(message: Message, session):
-    await message.bot.send_message(
+async def statistic_list(message: Message):
+    """Отправляется изображение с текущей статистикой по турниру 5х5."""
+    photo = InputFile('tgbot/services/pillow/media/statistic/tournament.png')
+    await message.bot.send_photo(
         chat_id=message.from_id,
-        text='Стастика команды в турнирной таблице отправляется в приватный чат!'
+        photo=photo
     )
 
 
 async def user_teams_cancel(callback: CallbackQuery):
-    await callback.message.edit_reply_markup()
+    """Удаляет кнопки и сообщение вызова сведений об игроках."""
+    await callback.message.delete()
 
 
 def register_user(dp: Dispatcher):
@@ -61,5 +66,6 @@ def register_user(dp: Dispatcher):
     dp.register_message_handler(about, Command('about'))
     dp.register_message_handler(rules, Command('rules'))
     dp.register_message_handler(team_list, Command('team'))
-    dp.register_message_handler(statistic_list, Command('statistic'))
     dp.register_callback_query_handler(user_teams_cancel, text='cancel')
+    dp.register_callback_query_handler(player_card)
+    dp.register_message_handler(statistic_list, Command('statistic'))
