@@ -56,9 +56,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-tgbot/services/pillow/media/player_card/*png
-tgbot/services/pillow/media/player_card/avatar/*.jpg
+
 # Pyre type checker
 .pyre/
 .idea/*
 .env
+/tgbot/services/pillow/media/player_card/*.png
+/tgbot/services/pillow/media/player_card/avatar/*.jpg
