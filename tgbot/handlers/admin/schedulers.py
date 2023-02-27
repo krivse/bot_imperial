@@ -17,7 +17,7 @@ async def task_scheduler(message: Message):
     """Кнопки для выбора действия с событиями."""
     await message.bot.send_message(
         chat_id=message.from_id,
-        text='Запланировать игру / тренировку',
+        text='<i>Запланировать игру / тренировку</i>',
         reply_markup=tasks)
 
 
@@ -35,9 +35,9 @@ async def tasks_create(call: CallbackQuery, scheduler: AsyncIOScheduler, state: 
             jobs.append(jb.name)
     if len(jobs) == 3 and call.data == 'create':
         await call.answer('Установлено максимальное количество событий')
-    elif not get_jobs and call.data == 'edit':
+    elif not jobs and call.data == 'edit':
         await call.answer('Отсутствуют события для изменения')
-    elif not get_jobs and call.data == 'delete':
+    elif not jobs and call.data == 'delete':
         await call.answer('Отсутствуют события для удаления')
     else:
         await call.message.edit_reply_markup(reply_markup=choice_types_tasks)
@@ -55,37 +55,45 @@ async def type_tasks(call: CallbackQuery, callback_data: dict, scheduler: AsyncI
     await state.update_data(type_en=types_en, type_ru=types_ru)
     data = await state.get_data()
     get_jobs = scheduler.get_jobs()
-    job = []
+    jobs, name = [], []
+
     for jb in get_jobs:
-        job.append(jb.name)
+        if jb.name in choice_types:
+            name.append(jb.name)
+            jobs.append([jb.name, jb.id, jb.next_run_time])
     if data.get('сed_state') == 'create':
-        if not get_jobs:
+        if jobs and types_en not in name:
             await call.message.edit_reply_markup(reply_markup=input_data_tasks)
-        elif get_jobs:
-            if types_en in job:
-                await call.answer(f'Задача на {accusative} уже есть!')
-            else:
-                await call.message.edit_reply_markup(reply_markup=input_data_tasks)
+        elif jobs:
+            for job in jobs:
+                if types_en == job[0]:
+                    await call.answer(f'Задача на {accusative} уже есть!')
+                    await call.message.answer(
+                        f'<b>Событие</b> "<i>{types_ru}</i>"\n'
+                        f'<b>Cледующий запуск:</b> <i>{job[2]}</i>\n'
+                      )
+        else:
+            await call.message.edit_reply_markup(reply_markup=input_data_tasks)
     elif data.get('сed_state') == 'edit':
-        for job in get_jobs:
-            if job.name == types_en:
-                await state.update_data(job_id=job.id)
+        for job in jobs:
+            if job[0] == types_en:
+                await state.update_data(job_id=job[1])
                 await call.message.edit_reply_markup(reply_markup=input_data_tasks)
-            elif job.name != types_en:
+            elif job[0] != types_en:
                 await call.answer(f'Задача на {accusative} не установлена или удалена!')
+
     elif data.get('сed_state') == 'delete':
-        for job in get_jobs:
-            if job.name == types_en:
-                print(job.name, job.id)
-                scheduler.remove_job(job.id)
+        for job in jobs:
+            if job[0] == types_en:
+                scheduler.remove_job(job[1])
                 await call.answer(f'Задача на {accusative} успешно удалена!')
-            elif job.name != types_en:
+            elif job != types_en:
                 await call.answer(f'Задача на {accusative} не установлена или удалена!')
 
 
 async def tasks_create_title(call: CallbackQuery, state: FSMContext):
     """Кнопка для указания названия события."""
-    message = await call.message.answer('Введи название создаваемого события:')
+    message = await call.message.answer('<i>Введи название создаваемого события</i>')
     await state.update_data(message_id=message.message_id)
     await Tasks.title.set()
 
@@ -101,7 +109,7 @@ async def tasks_update_state_title(message: Message, state: FSMContext):
 
 async def tasks_choice_day(call: CallbackQuery):
     """Кнопка для выбора дней недели."""
-    await call.message.answer('Выбери день недели для опроса', reply_markup=choice_day)
+    await call.message.answer('<i>Выбери день недели для опроса</i>', reply_markup=choice_day)
 
 
 async def tasks_update_state_day(call: CallbackQuery, callback_data: dict, state: FSMContext):
@@ -164,7 +172,7 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
             await callback_query.message.edit_reply_markup(reply_markup=input_data_tasks)
             await state.update_data(end_date=date.strftime("%Y-%m-%d"),
                                     format_end=date.strftime("%d.%m.%Y"))
-        data = await state.get_data()
+        await state.get_data()
 
 
 async def call_task_scheduler(call: CallbackQuery, scheduler: dict, state: FSMContext):
@@ -188,22 +196,21 @@ async def call_task_scheduler(call: CallbackQuery, scheduler: dict, state: FSMCo
     if preparation_for_start and job_id is None:
         await add_jobs_in_scheduler(data_state, scheduler)
         await call.message.answer(
-            f'! Зарегистировано событие !\n'
-            f'- Тип события: {types}\n'
-            f'- Название: {title}\n'
-            f'- День недели: {day}\n'
-            f'- Время запуска: 12:00\n'
-            f'- Планируемый период с: {format_start_date} - {format_end_date}')
-        # await state.reset_state(with_data=False)
+            f'<b><u>Зарегистировано событие</u></b>\n'
+            f'<i>Тип события:</i> <i>{types}</i>\n'
+            f'<i>Название:</i> <i>{title}</i>\n'
+            f'<i>День недели:</i> <i>{day}</i>\n'
+            f'<i>Время запуска:</i> <i>12:00</i>\n'
+            f'<i>Планируемый период:</i> <i>{format_start_date}-{format_end_date}</i>')
     elif preparation_for_start and job_id is not None:
         await modify_jobs_in_scheduler(data_state, scheduler)
         await call.message.answer(
-            f'! Cобытие было изменено !\n'
-            f'- Тип события: {types}\n'
-            f'- Название: {title}\n'
-            f'- День недели: {day}\n'
-            f'- Время запуска: 12:00\n'
-            f'- Планируемый период с: {format_start_date} - {format_end_date}')
+            f'<b><u>Исправленно событие</u></b>\n'
+            f'\t<i>-Тип события:</i> <i>{types}</i>\n'
+            f'\t<i>-Название:</i> <i>{title}</i>\n'
+            f'\t<i>-День недели:</i> <i>{day}</i>\n'
+            f'\t<i>-Время запуска:</i> <i>12:00</i>\n'
+            f'\t<i>-Планируемый период:</i> <i>{format_start_date}-{format_end_date}</i>')
 
 
 async def tasks_back(call: CallbackQuery):

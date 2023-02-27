@@ -43,3 +43,17 @@ class Team(Base):
     age = Column(Integer, default=None, nullable=True)
     avatar = Column(String, default=None, nullable=True)
     up_date = Column(TIMESTAMP(timezone=True), server_onupdate=func.now(), server_default=func.now())
+
+
+class About(Base):
+    __tablename__ = 'about'
+    id = Column(Integer, primary_key=True)
+    text = Column(String, default=None, nullable=True)
+    up_date = Column(TIMESTAMP(timezone=True), server_onupdate=func.now(), server_default=func.now())
+
+
+class Rules(Base):
+    __tablename__ = 'rules'
+    id = Column(Integer, primary_key=True)
+    text = Column(String, default=None, nullable=True)
+    up_date = Column(TIMESTAMP(timezone=True), server_onupdate=func.now(), server_default=func.now())

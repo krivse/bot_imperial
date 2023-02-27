@@ -23,6 +23,6 @@ async def team_keyboard(session):
 async def select_players(session):
     """Выборка имен игроков."""
     player = select(
-        Team.gamer,
+        Team.player,
     )
     return (await session.execute(player)).all()

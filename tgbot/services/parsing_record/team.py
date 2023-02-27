@@ -1,8 +1,6 @@
 import pathlib
-
 import aiohttp
 from bs4 import BeautifulSoup
-import asyncio
 import aiofiles
 
 from sqlalchemy import insert, select, delete, func
@@ -68,7 +66,7 @@ async def team_table():
             profile.close()
             response.close()
         await connect.close()
-    print(data)
+
     async_session = getattr(team_table, 'session')
     session = async_session()
 

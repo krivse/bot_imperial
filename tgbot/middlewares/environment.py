@@ -1,5 +1,4 @@
 from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
-from aiogram.types import CallbackQuery
 
 
 class EnvironmentMiddleware(LifetimeControllerMiddleware):

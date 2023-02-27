@@ -2,7 +2,20 @@ from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats, BotCommand
 from aiogram.bot import Bot
 
 
+commands = [
+    '/team',
+    '/about',
+    '/rules',
+    '/statistic',
+    '/change_about',
+    '/change_rules',
+    '/task_scheduler']
+
+
 async def set_default_commands(bot: Bot, user_id):
+    """
+    Команды для пользователя general_commands
+    Команды для админа general_commands + дополнительные."""
     general_commands = [
         BotCommand('about', 'О клубе'),
         BotCommand('rules', 'Правила клуба'),

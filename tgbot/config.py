@@ -27,6 +27,7 @@ class DbConfig:
 class TgBot:
     token: str
     admin_ids: list[int]
+    group_ids: int
     use_redis: bool
 
 
@@ -36,10 +37,22 @@ class Miscellaneous:
 
 
 @dataclass
+class RedisConfig:
+    host: str
+    port: int
+    db: int
+    password: str
+
+    def dsn(self):
+        return f"redis://:{self.password}@{self.host}:{self.port}/{self.db}"
+
+
+@dataclass
 class Config:
     tg_bot: TgBot
     db: DbConfig
     misc: Miscellaneous
+    redis_config: RedisConfig
 
 
 def load_config(path: str = None):
@@ -50,6 +63,7 @@ def load_config(path: str = None):
         tg_bot=TgBot(
             token=env.str("BOT_TOKEN"),
             admin_ids=list(map(int, env.list("ADMINS"))),
+            group_ids=env.int("GROUP"),
             use_redis=env.bool("USE_REDIS"),
         ),
         db=DbConfig(
@@ -59,5 +73,13 @@ def load_config(path: str = None):
             port=env.str('DP_PORT'),
             database=env.str('DB_NAME')
         ),
-        misc=Miscellaneous()
+        misc=Miscellaneous(
+
+        ),
+        redis_config=RedisConfig(
+            host=env.str('REDIS_HOST'),
+            port=env.int('REDIS_PORT'),
+            db=env.int('REDIS_DB'),
+            password=env.str('REDIS_PASSWORD')
+        )
     )

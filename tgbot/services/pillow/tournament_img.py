@@ -6,8 +6,11 @@ from aioEasyPillow import Canvas, Editor, Font
 async def show_table_tournament(data):
     """Динамическая обработка данных в изображении."""
     dynamic_string = len(data)
-    im = Canvas((1310, 37 * dynamic_string), color=('#0d0c0a'))  # #c2c2c2
-    editor = Editor(im)
+    editor = Editor(Canvas((1310, 37 * dynamic_string), color=('#0d0c0a')))  # #c2c2c2
+    logo = Editor(f'{os.path.dirname(os.path.abspath(__file__))}/media/logo/logo.png')
+    await logo.resize((1500, 1500))  # (1300, 1300)
+    await editor.paste(logo, (-100, -350))  # (10, -140)
+
     font_cap = Font.montserrat('bold', size=18)
     font = Font.montserrat('italic', size=18)
     header = ['Команда', 'Игры', 'Победы', 'Ничьи', 'Проигрыши', 'Голы', 'Пропущенные', 'Разница', 'Очки']

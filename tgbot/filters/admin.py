@@ -15,5 +15,11 @@ class AdminFilter(BoundFilter):
         if self.is_admin is None:
             return False
         config: Config = obj.bot.get('config')
-        return (obj.from_user.id in config.tg_bot.admin_ids) == self.is_admin
 
+        member = await obj.bot.get_chat_member(config.tg_bot.group_ids, obj.from_user.id)
+
+        if (obj.from_user.id in config.tg_bot.admin_ids) == self.is_admin:
+            return True
+        elif member.is_chat_admin() == self.is_admin:
+            config.tg_bot.admin_ids.append(member['user']['id'])
+            return True

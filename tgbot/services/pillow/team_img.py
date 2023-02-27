@@ -1,39 +1,6 @@
 import os
-import asyncio
 
 from aioEasyPillow import Canvas, Editor, Font
-
-data = [
-    ['Барков Павел Сергеевич', 'ПЗЩ', '8', '1', '0', '0', '1', '0', '0', '0', '0', '0', 'Империал', 'Космос-Купавна, Посейдон, Работнички, Санта Круз', '14/02/1992', '31', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Барков_Павел.jpg'],
-    ['Большаков Евгений Владимирович', 'ПЗЩ', '2', '1', '0', '0', '1', '0', '0', '0', '0', '0', 'Империал', 'Дрим Тим, Дрим Тим-2, Ямайка', '18/03/1997', '25', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Большаков_Евгений.jpg'],
-    ['Бурцев Дмитрий Иванович', 'ПЗЩ', '1', '1', '0', '0', '1', '0', '0', '0', '0', '0', 'Империал', 'Арсенал Балашиха, Ураган, Феникс, Феникс-2', '22/02/1992', '31', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Бурцев_Дмитрий.jpg'],
-    ['Васильев Виктор Викторович', 'ПЗЩ', '12', '0', '0', '0', '0', '0', '1', '0', '0', '0', 'Империал', 'Дружина Желдор, Олимпик, Работнички, Санта Круз', '13/05/1993', '29', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Васильев_Виктор.jpg'],
-    ['Волков Денис Максимович', 'ПЗЩ', '7', '4', '0', '5', '9', '0', '1', '0', '0', '0', 'Империал', 'Спарта Желдор, Спарта Желдор-2', '19/06/2001', '21', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Волков_Денис.jpg'],
-    ['Ковалевский Руслан Игоревич', 'ЗАЩ', '12', '5', '0', '3', '8', '0', '2', '0', '0', '0', 'Империал', 'АртМеталл, Здоровая Нация, Здоровая Нация-2, Здоровая Нация-3, Здоровый Регион СД, Сокол, Спарта Желдор, Феникс Железнодорожный, ЧМ', '10/10/1990', '32', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Ковалевский_Руслан.jpg'],
-    ['Королев Константин Игоревич', 'НАП', '6', '3', '1', '2', '5', '0', '1', '0', '0', '0', 'Виктория, Империал', 'Спарта', '27/05/1993', '29', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Королев_Константин.jpg'],
-    ['Красников Иван Сергеевич', 'ПЗЩ', '5', '0', '0', '1', '1', '0', '0', '1', '3', '8', 'Империал', 'Олимпик, Работнички', '25/07/1992', '30', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Красников_Иван.jpg'],
-    ['Малеков Мансур Хаммятович', 'ПЗЩ', '11', '0', '0', '0', '0', '0', '1', '0', '0', '0', 'Империал', 'Сокол, Сокол ЖелДор', '15/02/1997', '26', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Малеков_Мансур.jpg'],
-    ['Миюзов Борис Яковлевич', 'ЗАЩ', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Империал', 'Восточный Легион, Здоровая Нация, Здоровая Нация-2, Здоровая Нация-3, Здоровый Регион СД, Столичный Легион, Феникс Железнодорожный', '01/05/1993', '29', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Миюзов_Борис.jpg'],
-    ['Панин Роман Андреевич', 'ПЗЩ', '4', '0', '0', '0', '0', '0', '1', '0', '0', '0', 'Империал', 'Виктория', '14/02/2003', '20', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Панин_Роман.jpg'],
-    ['Паньков Алексей Петрович', 'ЗАЩ', '8', '0', '0', '0', '0', '0', '0', '0', '8', '35', 'Империал', 'Восточный Легион, Здоровая Нация, Здоровая Нация-2, Здоровый Регион СД, Столичный, Столичный Легион', '09/08/1984', '38', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Паньков_Алексей.jpg'],
-    ['Прокопенко Сергей Константинович', 'ПЗЩ', '5', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Империал', '-', '09/08/1991', '31', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Прокопенко_Сергей.jpg'],
-    ['Проничев Артур Андреевич', 'ЗАЩ', '4', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Империал', '-', '15/10/1992', '30', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Проничев_Артур.jpg'],
-    ['Савин Сергей Сергеевич', 'ПЗЩ', '7', '5', '0', '2', '7', '0', '0', '0', '0', '0', 'Империал', 'Здоровая Нация, Здоровая Нация-2, Здоровая Нация-3, Здоровый Регион СД, Феникс Железнодорожный', '16/10/1983', '39', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Савин_Сергей.jpg'],
-    ['Суднов Дмитрий Игоревич', 'ВРТ', '11', '3', '0', '3', '6', '0', '2', '0', '2', '6', 'Империал, Сокол', 'Динамика, Динамика-2, Санта Круз, Сокол ЖелДор', '05/09/1995', '27', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Суднов_Дмитрий.jpg'],
-    ['Супрунов Артём Андреевич', 'ПЗЩ', '10', '1', '0', '0', '1', '0', '0', '0', '0', '0', 'Империал', 'Дружина Желдор, Олимпик', '07/04/1992', '30', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Супрунов_Артём.jpg'],
-    ['Сухарев Андрей Владимирович', 'ЗАЩ', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Империал', '-', '24/08/1991', '31', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Сухарев_Андрей.jpg'],
-    ['Февралев Андрей Сергеевич', 'ПЗЩ', '5', '0', '0', '0', '0', '0', '1', '0', '0', '0', 'Империал', 'Снеговик, Столичный', '20/11/1991', '31', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Февралев_Андрей.jpg'],
-    ['Чайка Ярослав Юрьевич', 'НАП', '9', '1', '0', '0', '1', '0', '0', '0', '0', '0', 'Империал', '-', '05/01/1998', '25', '/Users/esvirk/PycharmProjects/bot_imperial/tgbot/services/pillow/media/player_card/avatar/Чайка_Ярослав.jpg']
-]
-
-# data.append([
-#                     player, role, games, goals,
-#                     penalty, assist, goalpen,
-#                     autogoals, yellowcards,
-#                     redcards, vrt, prg,
-#                     current_club, previous_clubs,
-#                     birthday, age, image.name
-#                 ])
 
 
 async def show_table_player(data):
@@ -44,7 +11,11 @@ async def show_table_player(data):
     for el in range(len(data)):
         editor = Editor(Canvas((370, 250), color=('#0d0c0a')))  # c2c2c2
         profile = Editor(data[el][16])
+        logo = Editor(f'{os.path.dirname(os.path.abspath(__file__))}/media/logo/logo.png')
         await profile.resize((190, 190))
+        await profile.rounded_corners(radius=2, offset=3)
+        await logo.resize((450, 450))  # ((50, 50)) ((700, 700))
+        await editor.paste(logo, (35, -50))  # (320, 0)) (35, -50)
         await editor.paste(profile)
 
         font_cap = Font.montserrat('bold', size=10)
@@ -117,8 +88,5 @@ async def show_table_player(data):
     #     await editor.text(
     #         (300, count + 110), text=previous_clubs[i], color=('#0C151C'), font=font_info)
     #     count += 20
-        await editor.show()
-        await editor.save(f'{os.path.dirname(os.path.abspath(__file__))}/media/player_card/{first_name}_{last_name}.png')
-
-
-# asyncio.run(show_table_player(data))
+        await editor.save(
+            f'{os.path.dirname(os.path.abspath(__file__))}/media/player_card/{first_name}_{last_name}.png')

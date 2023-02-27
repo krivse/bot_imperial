@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import asyncio
 import logging
 
@@ -11,10 +12,12 @@ from tgbot.filters.admin import AdminFilter
 from tgbot.handlers.admin.description_editor import register_change_description
 from tgbot.handlers.admin.schedulers import register_task_admin
 from tgbot.handlers.admin.admin import register_command_start_admin
+from tgbot.handlers.errors import register_errors_handler
 from tgbot.handlers.user import register_user
 from tgbot.middlewares.environment import EnvironmentMiddleware
 from tgbot.middlewares.database import DatabaseMiddleware
 from tgbot.services.db.config import create_session_pool
+from tgbot.services.scheduler.clean_up import clean_up_old_tasks
 from tgbot.services.scheduler.config import setup_scheduler
 from tgbot.services.scheduler.tournament import tournament_scheduler
 from tgbot.services.scheduler.team import team_scheduler
@@ -37,11 +40,13 @@ def register_all_handlers(dp):
     register_change_description(dp)
     register_task_admin(dp)
     register_user(dp)
+    register_errors_handler(dp)
 
 
 def plan_jobs(scheduler, session):
+    clean_up_old_tasks(scheduler)
     tournament_scheduler(scheduler, session)
-    # team_scheduler(scheduler, session)
+    team_scheduler(scheduler, session)
 
 
 async def main():
@@ -58,10 +63,9 @@ async def main():
 
     bot['config'] = config
 
-    session_pool = await create_session_pool(db=config.db, echo=True)
+    session_pool = await create_session_pool(db=config.db, echo=False)
     scheduler = setup_scheduler(bot, config)
 
-    plan_jobs(scheduler, session_pool)
     register_all_middlewares(dp, config, scheduler, session_pool)
     register_all_filters(dp)
     register_all_handlers(dp)
@@ -69,6 +73,7 @@ async def main():
     # start
     try:
         scheduler.start()
+        plan_jobs(scheduler, session_pool)
         await dp.start_polling()
     finally:
         await dp.storage.close()

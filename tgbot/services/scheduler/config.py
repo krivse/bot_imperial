@@ -4,17 +4,23 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler_di import ContextSchedulerDecorator
 
-from tgbot.config import Config
+from tgbot.config import Config, load_config
 
 
 def setup_scheduler(bot, config):
     """
     Конфигурация для планировщика событий.
     Незименяемые задачи: 'Туринирная таблица'
-                         'Таблица команды'
+                         'Таблица команды'.
     """
+    if not config:
+        config = load_config()
     job_stores = {
         "default": RedisJobStore(
+            db=config.redis_config.db,
+            host=config.redis_config.host,
+            password=config.redis_config.password,
+            port=config.redis_config.port,
             jobs_key="dispatched_trips_jobs", run_times_key="dispatched_trips_running"
         )
     }
@@ -24,11 +30,3 @@ def setup_scheduler(bot, config):
     scheduler.ctx.add_instance(config, declared_class=Config)
 
     return scheduler
-
-
-def team_scheduler(scheduler):
-    'Задача для Туринирная таблица'
-    scheduler.add_job(
-        # team_statistics,
-        trigger='cron', day_of_week='tue', hour='12'
-    )
