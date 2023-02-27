@@ -7,5 +7,5 @@ def tournament_scheduler(scheduler: object, instance_sess):
 
     scheduler.add_job(
         tournament_statistics,
-        trigger='cron', day_of_week='wed', hour='12'
+        trigger='cron', day_of_week='tue', hour='12'
     )

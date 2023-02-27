@@ -17,10 +17,10 @@ def setup_scheduler(bot, config):
         config = load_config()
     job_stores = {
         "default": RedisJobStore(
-            db=config.redis_config.db,
-            host=config.redis_config.host,
-            password=config.redis_config.password,
-            port=config.redis_config.port,
+            # db=config.redis_config.db,
+            # host=config.redis_config.host,
+            # password=config.redis_config.password,
+            # port=config.redis_config.port,
             jobs_key="dispatched_trips_jobs", run_times_key="dispatched_trips_running"
         )
     }

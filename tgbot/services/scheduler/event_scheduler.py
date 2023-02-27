@@ -38,7 +38,7 @@ async def voting_scheduler(data: dict):
     dp = Dispatcher.get_current()
     title = data['title']
     await dp.bot.send_poll(
-        chat_id=-1001826545007,
+        chat_id=dp.bot.get('config').tg_bot.group_ids,
         question=title,
         options=['Буду', 'Не смогу'],
         is_anonymous=False,
