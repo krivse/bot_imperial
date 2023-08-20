@@ -61,5 +61,5 @@ venv.bak/
 .pyre/
 .idea/*
 .env
-/tgbot/services/pillow/media/player_card/*.png
-/tgbot/services/pillow/media/player_card/avatar/*.jpg
+/tgbot/services/pillow/media/
+/alembic
