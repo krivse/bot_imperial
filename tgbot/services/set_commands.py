@@ -1,15 +1,21 @@
-from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeChat
+from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeChat, BotCommandScopeAllGroupChats
 from aiogram.bot import Bot
 
 
 commands = [
+    '/start',
     '/team',
     '/about',
     '/rules',
-    '/statistic',
+    '/tournament_table',
+    'user_manager',
+    '/users',
     '/change_about',
     '/change_rules',
-    '/task_scheduler']
+    '/task_scheduler'
+    # '/collect_statistics',
+    # '/reset_statistics',
+]
 
 
 async def set_default_commands(bot: Bot, user_id):
@@ -20,21 +26,26 @@ async def set_default_commands(bot: Bot, user_id):
         BotCommand('about', 'О клубе'),
         BotCommand('rules', 'Правила клуба'),
         BotCommand('team', 'Состав команды'),
-        BotCommand('statistic', 'Cтатистика матчей')
+        BotCommand('tournament_table', 'Турнирная таблица')
     ]
 
     if user_id in bot.get('config').tg_bot.admin_ids:
         await bot.set_my_commands(
             commands=[
                 *general_commands,
-                BotCommand('change_about', 'Изменить описание о клубе'),
-                BotCommand('change_rules', 'Изменить описание правил клуба'),
+                BotCommand('users', 'Список пользователей'),
+                BotCommand('user_manager', 'Менеджер пользователей'),
+                BotCommand('change_about', 'Изменить описание клуба'),
+                BotCommand('change_rules', 'Изменить правила клуба'),
                 BotCommand('task_scheduler', 'Планировщик задач')
+                # BotCommand('collect_statistics', 'Cтатистика c опросов'),
+                # BotCommand('reset_statistics', 'Сброс статистики')
+
             ],
-            scope=BotCommandScopeChat(user_id)
+            scope=BotCommandScopeAllPrivateChats(user_id)
         )
     else:
         await bot.set_my_commands(
             commands=general_commands,
-            scope=BotCommandScopeAllPrivateChats()
+            scope=BotCommandScopeAllGroupChats()
         )

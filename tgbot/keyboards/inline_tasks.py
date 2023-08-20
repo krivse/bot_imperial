@@ -20,7 +20,7 @@ tasks = InlineKeyboardMarkup(
 )
 
 types_callback = CallbackData('types', 'type_name_ru', 'type_name_en', 'accusative')
-choice_types = ['game', 'training', 'training_2']
+choice_types = ['game', 'training', 'training_2', 'best_player']
 choice_types_tasks = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -38,6 +38,11 @@ choice_types_tasks = InlineKeyboardMarkup(
                 type_name_ru='Тренировка 2', type_name_en='training_2', accusative='тренировку 2'
             ))
         ],
+        # [
+        #     InlineKeyboardButton(text='Лучший игрок', callback_data=types_callback.new(
+        #         type_name_ru='Лучший игрок', type_name_en='best_player', accusative='Лучшего и-ка'
+        #     ))
+        # ],
         [
             InlineKeyboardButton(text='Назад', callback_data='back_tasks'),
             InlineKeyboardButton(text='Отмена', callback_data='cancel')

@@ -7,12 +7,19 @@ from tgbot.services.set_commands import set_default_commands
 
 async def admin_start(message: Message):
     """Приветственное сообщение с админом."""
-    await message.bot.send_message(message.from_user.id,
-        f'<i>Приветствую, </i>{message.from_user.first_name} <i>(admin)</i>\n'
-        f'<i>в футбольном клубе Империал!\n'
-        f'Изменить правила клуба - /change_about\n'
-        f'Изменить описания о клубе - /change_rules\n'
-        f'Планировщик событий - /task_scheduler</i>'
+    await message.bot.send_message(
+        message.from_user.id,
+        f'Приветствую, {message.from_user.first_name} <i>(admin)</i>\n'
+        'в футбольном клубе Империал!\n'
+        'Описание клуба - /about\n'
+        'Правила клуба - /rules\n'
+        'Состав команды - /team\n'
+        'Список пользователей - /users\n'
+        'Турнирная таблица - /tournament_table\n'
+        'Изменить описание клуба - /change_about\n'
+        'Изменить правила клуба - /change_rules\n'
+        'Планировщик событий - /task_scheduler\n'
+        'Редактор пользователей - /user_manager'
     )
     await set_default_commands(
         message.bot,

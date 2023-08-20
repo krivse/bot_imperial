@@ -1,4 +1,4 @@
-from tgbot.services.parsing_record.tournament import tournament_statistics
+from tgbot.services.parsers.tournament import tournament_statistics
 
 
 def tournament_scheduler(scheduler: object, instance_sess):

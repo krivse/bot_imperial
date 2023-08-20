@@ -4,10 +4,14 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler_di import ContextSchedulerDecorator
 
+from aiogram import Bot
+
+from sqlalchemy.orm import sessionmaker
+
 from tgbot.config import Config, load_config
 
 
-def setup_scheduler(bot, config):
+def setup_scheduler(bot, config, session_pool):
     """
     Конфигурация для планировщика событий.
     Незименяемые задачи: 'Туринирная таблица'
@@ -26,7 +30,11 @@ def setup_scheduler(bot, config):
     }
     scheduler = ContextSchedulerDecorator(AsyncIOScheduler(
         timezone=str(tzlocal.get_localzone()), jobstores=job_stores))
-    scheduler.ctx.add_instance(bot, declared_class=bot)
+
+    if not bot:
+        bot = Bot(config.tg_bot.token)
+    scheduler.ctx.add_instance(bot, declared_class=Bot)
     scheduler.ctx.add_instance(config, declared_class=Config)
+    scheduler.ctx.add_instance(session_pool, declared_class=sessionmaker)
 
     return scheduler

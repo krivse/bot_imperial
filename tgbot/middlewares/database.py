@@ -10,7 +10,6 @@ class DatabaseMiddleware(LifetimeControllerMiddleware):
 
     async def pre_process(self, obj, data, *args):
         session = self.session_pool()
-
         data['session'] = session
 
     async def post_process(self, obj, data, *args):

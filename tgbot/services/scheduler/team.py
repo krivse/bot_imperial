@@ -1,4 +1,4 @@
-from tgbot.services.parsing_record.team import team_table
+from tgbot.services.parsers.team import team_table
 
 
 def team_scheduler(scheduler: object, instance_sess):
