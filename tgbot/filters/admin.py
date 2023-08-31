@@ -48,7 +48,6 @@ class UserFilter(BoundFilter):
         data = ctx_data.get()
         session = data.get('session')
         users = await get_all_users(session)
-        tournament_table = await get_all_tournament_table(session)
 
         users_ = []
         if self.mode == 'edit_user':
@@ -67,6 +66,7 @@ class UserFilter(BoundFilter):
             if call.data in users_:
                 return True
         elif self.mode == 'tournament_table':
+            tournament_table = await get_all_tournament_table(session)
             for table in tournament_table:
                 if call.data in table.replace(' ', '_'):
                     return True

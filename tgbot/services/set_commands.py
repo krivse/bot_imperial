@@ -12,7 +12,9 @@ commands = [
     '/users',
     '/change_about',
     '/change_rules',
-    '/task_scheduler'
+    '/task_scheduler',
+    '/update_team',
+    '/update_tournament'
     # '/collect_statistics',
     # '/reset_statistics',
 ]
@@ -26,7 +28,7 @@ async def set_default_commands(bot: Bot, user_id):
         BotCommand('about', 'О клубе'),
         BotCommand('rules', 'Правила клуба'),
         BotCommand('team', 'Состав команды'),
-        BotCommand('tournament_table', 'Турнирная таблица')
+        # BotCommand('tournament_table', 'Турнирная таблица')
     ]
 
     if user_id in bot.get('config').tg_bot.admin_ids:
@@ -37,8 +39,10 @@ async def set_default_commands(bot: Bot, user_id):
                 BotCommand('user_manager', 'Менеджер пользователей'),
                 BotCommand('change_about', 'Изменить описание клуба'),
                 BotCommand('change_rules', 'Изменить правила клуба'),
-                BotCommand('task_scheduler', 'Планировщик задач')
-                # BotCommand('collect_statistics', 'Cтатистика c опросов'),
+                BotCommand('update_team', 'Ручное обновление статистики команды'),
+                # BotCommand('update_tournament', 'Ручное обновление турнирной таблицы')
+                # BotCommand('task_scheduler', 'Планировщик задач')
+                # BotCommand('collect_statistics', 'Cтатистика опросов'),
                 # BotCommand('reset_statistics', 'Сброс статистики')
 
             ],

@@ -61,5 +61,8 @@ venv.bak/
 .pyre/
 .idea/*
 .env
-/tgbot/services/pillow/media/
+/tgbot/services/pillow/media
 /alembic
+/postgres
+/cache
+.DS_Store

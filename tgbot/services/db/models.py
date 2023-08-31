@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, func, DateTime, BigInteger, Text, ForeignKey, LargeBinary,\
-    UniqueConstraint, PrimaryKeyConstraint, CheckConstraint
+    UniqueConstraint, PrimaryKeyConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -54,7 +54,7 @@ class Player(Base):
     __tablename__ = 'player'
 
     id = Column(Integer, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False, index=True)
     tournament_id = Column(Integer, ForeignKey('tournament.id'), nullable=False, index=True)
     game = Column(Integer, default=0)
     goal = Column(Integer, default=0)
@@ -97,7 +97,7 @@ class About(Base):
 class UserPoll(Base):
     __tablename__ = 'user_poll'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), index=True)
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), index=True)
     poll_id = Column(BigInteger, ForeignKey('poll.poll_id'), index=True)
     answer = Column(Integer)
     time_created = Column(DateTime(timezone=True), server_default=func.now())

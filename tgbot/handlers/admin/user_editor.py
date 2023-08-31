@@ -18,11 +18,11 @@ async def users_admin(message: Message, state: FSMContext):
     Механизм по работе с пользователями
     Вывод кнопок для Создания / Редактирования / Удаления.
     """
-    cancel_menu_manager_user = await message.bot.send_message(
+    cancel_start_menu_manager_user = await message.bot.send_message(
         chat_id=message.from_user.id,
         text='Выберите нужный пункт меню',
         reply_markup=select_type_user_work_keyboard)
-    await state.update_data(cancel_menu_manager_user=cancel_menu_manager_user.message_id)
+    await state.update_data(cancel_start_menu_manager_user=cancel_start_menu_manager_user.message_id)
 
 
 async def add_user_admin(call: CallbackQuery, state: FSMContext):
@@ -32,8 +32,8 @@ async def add_user_admin(call: CallbackQuery, state: FSMContext):
     """
     state_data = await state.get_data()
 
-    cancel_menu_manager_user = state_data.get('cancel_menu_manager_user')
-    await call.bot.delete_message(chat_id=call.from_user.id, message_id=cancel_menu_manager_user)
+    cancel_start_menu_manager_user = state_data.get('cancel_start_menu_manager_user')
+    await call.bot.delete_message(chat_id=call.from_user.id, message_id=cancel_start_menu_manager_user)
 
     msg_cancel_editor_user = await call.message.answer(
         'Перешлите сообщение от пользователя или введите его telegram_id, '
@@ -486,6 +486,8 @@ async def select_user_for_delete_admin(call: CallbackQuery, session, state: FSMC
     first_name, last_name = call.data.split('_')[1:]
     await delete_user(session, first_name, last_name)
     await call.answer(f'Пользователь {last_name} {first_name} удален.')
+    cancel_menu_manager_user = (await state.get_data()).get('cancel_start_menu_manager_user')
+    await call.bot.delete_message(chat_id=call.from_user.id, message_id=cancel_menu_manager_user)
     await state.finish()
 
 
@@ -531,9 +533,17 @@ async def cancel_menu_editor_user(call: CallbackQuery, state: FSMContext):
     await state.finish()
 
 
+async def cancel_start_menu_manager_users(call: CallbackQuery, state: FSMContext):
+    cancel_menu_manager_user = (await state.get_data()).get('cancel_start_menu_manager_user')
+    await call.bot.delete_message(chat_id=call.from_user.id, message_id=cancel_menu_manager_user)
+    await state.finish()
+
+
 def register_users_admin(dp: Dispatcher):
     dp.register_message_handler(users_admin, Command('user_manager'), is_admin=True)
-    dp.register_callback_query_handler(cancel_menu_editor_user, text='cancel_menu_manager_user', is_admin=True)
+    dp.register_callback_query_handler(cancel_start_menu_manager_users,
+                                       text='cancel_start_menu_manager_user',
+                                       is_admin=True)
     dp.register_callback_query_handler(add_user_admin, text='add_user', is_admin=True)
     dp.register_message_handler(telegram_id_user, state=UserState.telegram_id, is_admin=True)
     dp.register_message_handler(full_name_user, state=UserState.full_name, is_admin=True)
@@ -551,6 +561,10 @@ def register_users_admin(dp: Dispatcher):
     dp.register_callback_query_handler(select_user_for_delete_admin, mode='delete_user', is_admin=True)
     dp.register_callback_query_handler(cancel_keyboard_users,
                                        text=['delete_cancel_keyboard_user', 'edit_cancel_keyboard_user'],
+                                       is_admin=True)
+    dp.register_callback_query_handler(cancel_menu_editor_user,
+                                       state=UserState,
+                                       text='cancel_menu_manager_user',
                                        is_admin=True)
     dp.register_message_handler(get_list_users, Command('users'), is_admin=True)
     dp.register_callback_query_handler(cancel_create_user, state=UserState, text='cancel_editor_user')

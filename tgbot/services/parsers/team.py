@@ -1,13 +1,14 @@
-import asyncio
 import logging
 
 import aiohttp
 from bs4 import BeautifulSoup
 
+from sqlalchemy.orm import sessionmaker
+
 from tgbot.services.db.query import create_or_update_team_table
 
 
-async def team_table() -> None:
+async def team_table(session_pool: sessionmaker) -> None:
     """
     Еженедельный парсер результирующей таблицы команды
     """
@@ -76,7 +77,4 @@ async def team_table() -> None:
                         logging.info('Возможные проблемы с доступностью элемента при скрапинге!')
                         logging.error('Исключение при скрапинге', error)
 
-    async_session = getattr(team_table, 'session')
-    session = async_session()
-
-    await create_or_update_team_table(data, session)
+    await create_or_update_team_table(data, session_pool)

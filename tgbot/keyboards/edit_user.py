@@ -12,7 +12,7 @@ select_type_user_work_keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(text='Удалить', callback_data='delete_user')
         ],
         [
-            InlineKeyboardButton(text='Отмена', callback_data='cancel_menu_manager_user')
+            InlineKeyboardButton(text='Отмена', callback_data='cancel_start_menu_manager_user')
         ]
     ]
 )
@@ -60,7 +60,7 @@ create_user_db = InlineKeyboardMarkup(
 cancel_editor_user = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='Отменить', callback_data='cancel_user')
+            InlineKeyboardButton(text='Отменить', callback_data='cancel_editor_user')
         ]
     ]
 )

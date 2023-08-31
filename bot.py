@@ -50,10 +50,10 @@ def register_all_handlers(dp):
     register_errors_handler(dp)
 
 
-def plan_jobs(scheduler, session):
+def plan_jobs(scheduler):
     clean_up_old_tasks(scheduler)
-    tournament_scheduler(scheduler, session)
-    team_scheduler(scheduler, session)
+    tournament_scheduler(scheduler)
+    team_scheduler(scheduler)
 
 
 async def main():
@@ -80,7 +80,7 @@ async def main():
     # start
     try:
         scheduler.start()
-        plan_jobs(scheduler, session_pool)
+        plan_jobs(scheduler)
         await dp.start_polling()
     finally:
         await dp.storage.close()

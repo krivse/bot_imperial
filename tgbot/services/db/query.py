@@ -49,6 +49,7 @@ async def get_all_tournament_table(session):
         select(
             Tournament.name
         ))).fetchall()
+    print(result)
 
     return result[0]
 
@@ -167,7 +168,7 @@ async def add_user(session, telegram_id, first_name, last_name, middle_name, bir
         await session.commit()
         return f'{new_user.last_name} {new_user.first_name} добавлен в команду Империал!', new_user.id
     else:
-        return [f'Пользователь с таким ID телеграма уже записан под именем: {user[1]} {user[0]}']
+        return [f'Пользователь с таким telegram-ID уже записан под именем: {user[1]} {user[0]}']
 
 
 async def edit_user(session, db_first_name, db_last_name,

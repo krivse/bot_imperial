@@ -1,23 +1,19 @@
-from aiogram.dispatcher import Dispatcher
-
 from tgbot.services.db.query import create_poll
 
 from aiogram import Bot
 from sqlalchemy.orm import sessionmaker
 
 
-async def add_jobs_in_scheduler(data, session, scheduler):
+async def add_jobs_in_scheduler(data, scheduler):
     """Создание события в scheduler с помощью cron."""
     start_date = data['start_date']
     end_date = data['end_date']
     types_en = data['type_en']
     day_en = data['day_en']
-    bot = Dispatcher.get_current().bot
-    instance = {'dp': bot, 'session': session}
-    setattr(voting_scheduler, 'instance', instance)
+
     scheduler.add_job(
         voting_scheduler,
-        trigger='cron', start_date=start_date, end_date=end_date, day_of_week=day_en, hour='0-23', minute='*/1',
+        trigger='cron', start_date=start_date, end_date=end_date, day_of_week=day_en, hour='12',
         kwargs={'data': data},
         name=types_en,
     )

@@ -29,29 +29,29 @@ async def change_about(message: Message, state: FSMContext):
              f'- </s> <u>underline italic bold</u></i> bold</b>',
         reply_markup=cancel
     )
-    await state.update_data(message_id=msg.message_id)
+    await state.update_data(message_id_about=msg.message_id)
     await AboutState.text.set()
 
 
 async def record_about(message: Message, session, state: FSMContext):
     """Запись новой информации о команде в БД."""
     message_id = await state.get_data()
+
     if message.text not in commands:
         await add_a_new_entry_to_about(session, message.text)
-        await state.finish()
-        await message.delete()
         await message.bot.delete_message(
             chat_id=message.chat.id,
-            message_id=message_id.get('message_id_about_1'),
+            message_id=message_id.get('message_id_about'),
         )
+        await state.finish()
     else:
-        message_id_2 = await message.bot.send_message(
+        cancel_id_message_about = await message.bot.send_message(
             chat_id=message.chat.id,
             text='Вы вводите текст, который cоответствует названию команды бота. '
                  'Попробуйте ещё раз..',
             reply_markup=cancel
         )
-        await state.update_data(message_id_2=message_id_2.message_id)
+        await state.update_data(cancel_id_message_about=cancel_id_message_about.message_id)
 
 
 async def change_rules(message: Message, state: FSMContext):
@@ -73,45 +73,63 @@ async def change_rules(message: Message, state: FSMContext):
              f'- </s> <u>underline italic bold</u></i> bold</b>',
         reply_markup=cancel
     )
-    await state.update_data(message_id=msg.message_id)
+    await state.update_data(message_id_rules=msg.message_id)
     await RulesState.text.set()
 
 
 async def record_rules(message: Message, session, state: FSMContext):
     """Запись новой информации о правилах в БД."""
     message_id = await state.get_data()
+
     if message.text not in commands:
         await add_a_new_entry_to_rules(session, message.text)
-        await state.finish()
-        await message.delete()
         await message.bot.delete_message(
             chat_id=message.chat.id,
-            message_id=message_id.get('message_id_rules_1'))
+            message_id=message_id.get('message_id_rules'))
         await state.finish()
     else:
-        message_id_2 = await message.bot.send_message(
+        cancel_id_message_rules = await message.bot.send_message(
             chat_id=message.chat.id,
             text='Вы вводите текст, который cоответствует названию команды бота. '
                  'Попробуйте ещё раз..',
             reply_markup=cancel
         )
-        await state.update_data(message_id_2=message_id_2.message_id)
+        await state.update_data(cancel_id_message_rules=cancel_id_message_rules.message_id)
 
 
 async def cancel_about_or_rules(call: CallbackQuery, state: FSMContext):
     """Отмена редактирования описания / правил команды."""
     message = await state.get_data()
-    await call.message.edit_reply_markup()
 
-    if message.get('message_id'):
+    if message.get('cancel_id_message_about'):
         await call.message.bot.delete_message(
             chat_id=call.message.chat.id,
-            message_id=message.get('message_id')
+            message_id=message.get('cancel_id_message_about')
         )
-    if message.get('message_id_2'):
+        if message.get('message_id_about'):
+            await call.message.bot.delete_message(
+                chat_id=call.message.chat.id,
+                message_id=message.get('message_id_about')
+            )
+    elif message.get('message_id_about'):
         await call.message.bot.delete_message(
             chat_id=call.message.chat.id,
-            message_id=message.get('message_id_2')
+            message_id=message.get('message_id_about')
+        )
+    elif message.get('cancel_id_message_rules'):
+        await call.message.bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=message.get('cancel_id_message_rules')
+        )
+        if message.get('message_id_rules'):
+            await call.message.bot.delete_message(
+                chat_id=call.message.chat.id,
+                message_id=message.get('message_id_rules')
+            )
+    elif message.get('message_id_rules'):
+        await call.message.bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=message.get('message_id_rules')
         )
 
     await state.finish()
@@ -119,7 +137,7 @@ async def cancel_about_or_rules(call: CallbackQuery, state: FSMContext):
 
 def register_change_description_admin(dp: Dispatcher):
     dp.register_message_handler(change_about, Command('change_about'), is_admin=True)
-    dp.register_message_handler(record_about, state=AboutState.text, is_admin=True)
+    dp.register_message_handler(record_about, state=AboutState.text)
     dp.register_message_handler(change_rules, Command('change_rules'), is_admin=True)
-    dp.register_message_handler(record_rules, state=RulesState.text, is_admin=True)
+    dp.register_message_handler(record_rules, state=RulesState.text)
     dp.register_callback_query_handler(cancel_about_or_rules, text='cancel_description', state='*')

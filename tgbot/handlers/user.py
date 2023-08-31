@@ -94,6 +94,7 @@ async def tournament_table(message: Message, session, state: FSMContext):
 
 async def user_teams_cancel(call: CallbackQuery, state: FSMContext):
     """Удаляет кнопки и сообщение вызова сведений об игроках."""
+
     msg = (await state.get_data()).get('msg_team_list')
     if msg is not None:
         await call.message.bot.delete_message(

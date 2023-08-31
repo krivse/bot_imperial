@@ -4,9 +4,13 @@ from aiogram.dispatcher.filters.builtin import Command
 from aiogram.types import Message, CallbackQuery, InputFile
 
 from tgbot.handlers.admin.schedulers import tasks_end_date, tasks_start_date
+from tgbot.handlers.user import tournament_table
 from tgbot.keyboards.inline_statistic import callback_reset_statistics, reset_statistics, statistics, types_name
 from tgbot.keyboards.inline_tasks import choice_types
 from tgbot.services.db.query import clear_tournament_table_5x5, statistics_publish
+from tgbot.services.parsers.team import team_table
+from tgbot.services.parsers.tournament import tournament_statistics
+from tgbot.services.scheduler.team import team_scheduler
 
 
 async def form_statistics(message: Message, session, state: FSMContext):
@@ -87,6 +91,29 @@ async def cancel_statistics_for_reset(call: CallbackQuery, state: FSMContext):
     await state.finish()
 
 
+async def manual_team_update(message: Message, session):
+    """Ручное обновление статистики игроков."""
+    msg = await message.answer(
+        'Выполняется запрос на обновление статистики по игрокам. После заверения вы получите уведомление. Ожидайте..'
+    )
+    # tournament_statistics - временно
+    await tournament_statistics(session)
+    await team_table(session)
+    await msg.delete()
+    await message.answer('Запрос обработан, можете проверить результат.')
+
+
+async def manual_tournament_update(message: Message, session):
+    """Ручное обновление статистики турнирной таблицы."""
+    msg = await message.answer(
+        'Выполняется запрос на обновление статистики турнирной таблицы. '
+        'После заверения вы получите уведомление. Ожидайте..'
+    )
+    await tournament_statistics(session)
+    await msg.delete()
+    await message.answer('Запрос обработан, можете проверить результат.')
+
+
 def register_statistics_admin(dp: Dispatcher):
     dp.register_message_handler(form_statistics, Command('collect_statistics'), is_admin=True)
     dp.register_callback_query_handler(
@@ -98,3 +125,5 @@ def register_statistics_admin(dp: Dispatcher):
     dp.register_message_handler(statistics_for_reset, Command('reset_statistics'), is_admin=True)
     dp.register_callback_query_handler(select_statistics_for_reset, text=callback_reset_statistics, is_admin=True)
     dp.register_callback_query_handler(cancel_statistics_for_reset, text='cancel_reset_statistics', is_admin=True)
+    dp.register_message_handler(manual_team_update, Command('update_team'), is_admin=True)
+    dp.register_message_handler(manual_tournament_update, Command('update_tournament'), is_admin=True)

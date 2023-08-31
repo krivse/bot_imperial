@@ -51,6 +51,8 @@
      * Динамическая клавиатура со списком игроков генерируется с использованием бд (таблица: User), по умолчанию обновление данных раз в неделю или после добавления нового пользователя.
      * Данные хранятся в БД (таблица: User).
      * Возможность отмены действия.
+   6. /team_update - ручной запуск парсера для обновления статистики членов команды
+     * Технологии: SqlAlchemy, PostgreSQl, asyncpg.
 2. Пользовательские команды:
    1. /about - описание клуба
      * Технологии: SqlAlchemy, PostgreSQl, asyncpg;
@@ -166,7 +168,11 @@ pip install -r requirements.txt
     - БД для хранилища данных: DB_USER, DB_PASS, DB_NAME, DP_PORT, DB_HOST
     - БД для хранилища задач: REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
 
-Запустить с помощью команды: python bot.py
+Запустить с помощью команды:
+    - python bot.py
+Выполнить миграции: 
+    - alembic revision --autogenerate
+    - alembic upgrade head
 ```
 
 ###### Ivan Krasnikov

@@ -1,7 +1,7 @@
-import asyncio
-
 import aiohttp
 from bs4 import BeautifulSoup
+
+from sqlalchemy.orm import sessionmaker
 
 from tgbot.services.db.query import create_or_update_tournament_table
 
@@ -22,7 +22,7 @@ LEAGUE = [
 ]
 
 
-async def tournament_statistics() -> None:
+async def tournament_statistics(session_pool: sessionmaker) -> None:
     """
     Еженедельный парсер результирующей таблицы по турниру
     Если таблица не пустая, то сначала происходит её отчистка,
@@ -70,6 +70,4 @@ async def tournament_statistics() -> None:
                     season, organization, period
                 ])
 
-    async_session = getattr(tournament_statistics, 'session')
-    session = async_session()
-    await create_or_update_tournament_table(data, session)
+    await create_or_update_tournament_table(data, session_pool)

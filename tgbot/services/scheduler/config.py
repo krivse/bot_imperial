@@ -11,20 +11,20 @@ from sqlalchemy.orm import sessionmaker
 from tgbot.config import Config, load_config
 
 
-def setup_scheduler(bot, config, session_pool):
+def setup_scheduler(bot: Bot, config: Config, session_pool: sessionmaker):
     """
     Конфигурация для планировщика событий.
-    Незименяемые задачи: 'Туринирная таблица'
+    Неизменяемые задачи: 'Турнирная таблица'
                          'Таблица команды'.
     """
     if not config:
         config = load_config()
     job_stores = {
         "default": RedisJobStore(
-            # db=config.redis_config.db,
-            # host=config.redis_config.host,
-            # password=config.redis_config.password,
-            # port=config.redis_config.port,
+            db=config.redis_config.db,
+            host=config.redis_config.host,
+            password=config.redis_config.password,
+            port=config.redis_config.port,
             jobs_key="dispatched_trips_jobs", run_times_key="dispatched_trips_running"
         )
     }
